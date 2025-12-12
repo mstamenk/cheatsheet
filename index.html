@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>CLI Cheat Sheet</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#0b1220;
+      --muted:#5b667a;
+      --line:#e7ecf3;
+      --card:#ffffff;
+      --blue:#1d4ed8;
+      --blue-2:#2563eb;
+      --blue-soft:#eff6ff;
+      --shadow: 0 10px 30px -18px rgba(15, 23, 42, .25);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family:var(--sans);
+      line-height:1.35;
+    }
+    a{ color:var(--blue); text-decoration:none; }
+    a:hover{ color:var(--blue-2); text-decoration:underline; }
+    .wrap{
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 22px 18px 44px;
+    }
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 10px 2px 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 220px;
+    }
+    .brand .title{
+      font-size: 18px;
+      font-weight: 650;
+      letter-spacing: -.01em;
+    }
+    .brand .subtitle{
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .controls{
+      flex:1;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:10px;
+      align-items:center;
+    }
+    .search{
+      flex:1;
+      min-width: 260px;
+      max-width: 520px;
+      position:relative;
+    }
+    .search input{
+      width:100%;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline:none;
+      background:#fff;
+    }
+    .search input:focus{
+      border-color: rgba(37,99,235,.55);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+    }
+
+    .btn, button.btn{
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--fg);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    .btn:hover{ border-color: #d6deea; background: #fafcff; }
+    .btn.primary{
+      border-color: rgba(37,99,235,.40);
+      background: var(--blue-soft);
+      color: #0b2a79;
+    }
+    .btn.primary:hover{
+      border-color: rgba(37,99,235,.60);
+      background: #e8f1ff;
+    }
+    .btn.danger{
+      border-color: rgba(220,38,38,.35);
+      background: #fff5f5;
+      color: #7f1d1d;
+    }
+    .btn.danger:hover{
+      border-color: rgba(220,38,38,.55);
+      background: #ffecec;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+    }
+    .card-head h2{
+      margin:0;
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: -.005em;
+    }
+    .card-body{
+      padding: 14px;
+    }
+    .hint{
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 10px 0 0;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 220px;
+      flex: 1;
+    }
+    label{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    input[type="text"], textarea{
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 10px;
+      font-size: 13.5px;
+      outline:none;
+      background:#fff;
+    }
+    input[type="text"]:focus, textarea:focus{
+      border-color: rgba(37,99,235,.55);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+    }
+
+    /* Command/path inputs: prevent “helpful” transformations */
+    .mono{
+      font-family: var(--mono);
+      font-feature-settings: "liga" 0, "calt" 0;
+      font-variant-ligatures: none;
+      letter-spacing: 0;
+    }
+    textarea.mono{
+      width: 100%;
+      min-height: 170px;
+      resize: both;           /* lower-right corner resize handle */
+      overflow: auto;
+      max-width: 100%;
+    }
+
+    .paths-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top: 6px;
+    }
+    .path-item{
+      display:grid;
+      grid-template-columns: 180px 1fr auto auto;
+      gap: 8px;
+      align-items:center;
+    }
+    @media (max-width: 820px){
+      .path-item{ grid-template-columns: 1fr; }
+    }
+
+    .project-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      width:100%;
+    }
+    .project-name{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex:1;
+      min-width: 260px;
+    }
+    .project-name input{
+      font-size: 14px;
+      font-weight: 650;
+      padding: 10px 12px;
+      border-radius: 999px;
+      width: 100%;
+    }
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .project-body-grid{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .project-body-grid{ grid-template-columns: 1fr; }
+    }
+    .small-btn{
+      padding: 8px 10px;
+      font-size: 12.5px;
+    }
+    .copy-ok{
+      font-size: 12px;
+      color: #0f766e;
+      margin-left: 8px;
+      display:none;
+    }
+
+    .collapsed .card-body{ display:none; }
+
+    /* Fullscreen editor */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(15, 23, 42, .45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 50;
+    }
+    .modal{
+      width: min(1100px, 100%);
+      background:#fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 30px 80px -40px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modal .modal-head{
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: #fbfdff;
+    }
+    .modal .modal-head .modal-title{
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .modal .modal-body{
+      padding: 12px 14px 14px;
+    }
+    .modal textarea{
+      width:100%;
+      height: min(68vh, 780px);
+      min-height: 360px;
+      resize: none;
+    }
+
+    footer{
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background:#fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="title">CLI Cheat Sheet</div>
+        <div class="subtitle">
+          Local-only storage (your browser). Commands/paths have spellcheck disabled for safe copy/paste.
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="search">
+          <input id="searchInput" type="text" placeholder="Search projects, paths, commands…" />
+        </div>
+
+        <button class="btn primary" id="addProjectBtn" type="button">New project</button>
+        <button class="btn" id="exportBtn" type="button">Export</button>
+
+        <label class="btn" for="importFile" style="cursor:pointer;">
+          Import
+          <input id="importFile" type="file" accept="application/json" hidden />
+        </label>
+
+        <button class="btn danger" id="clearBtn" type="button">Clear</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card" aria-label="Quick paths">
+        <div class="card-head">
+          <h2>Quick paths</h2>
+          <button class="btn small-btn" id="addQuickPathBtn" type="button">Add path</button>
+        </div>
+        <div class="card-body">
+          <div id="quickPathsList" class="paths-list"></div>
+          <p class="hint">Use this for frequently reused directories (workspaces, EOS roots, scratch locations, etc.).</p>
+        </div>
+      </section>
+
+      <section id="projectsSection" aria-label="Projects"></section>
+    </div>
+
+    <footer>
+      <div class="pill">
+        <span>Last saved:</span>
+        <strong id="lastSaved">—</strong>
+      </div>
+      <div class="pill">
+        <span>Tip:</span>
+        <span>Use Export/Import as a backup (JSON).</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Fullscreen editor modal -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle">Edit commands</div>
+        <div class="row">
+          <button class="btn small-btn" id="modalCopyBtn" type="button">Copy</button>
+          <button class="btn small-btn" id="modalCloseBtn" type="button">Done</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <textarea
+          id="modalTextarea"
+          class="mono"
+          spellcheck="false"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="off"
+        ></textarea>
+        <p class="hint" style="margin-top:10px;">Spellcheck/autocorrect disabled; ligatures disabled for safe CLI copy/paste.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const STORAGE_KEY = "cliCheatSheet.v1";
+
+      const el = (id) => document.getElementById(id);
+
+      const stateDefault = () => ({
+        version: 1,
+        updatedAt: null,
+        quickPaths: [
+          { id: uid(), label: "Workspace", value: "" },
+        ],
+        projects: [
+          {
+            id: uid(),
+            name: "Example: hhh-analysis",
+            collapsed: false,
+            paths: [
+              { id: uid(), label: "Repo", value: "" },
+              { id: uid(), label: "Scratch", value: "" },
+            ],
+            commands: "# Paste your commands here\n# e.g.\n# cd /path/to/repo\n# source setup.sh\n# law run Task --workers 8\n"
+          }
+        ]
+      });
+
+      let state = load();
+
+      // --- Utils ---
+      function uid(){
+        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+        return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+      }
+
+      function nowISO(){ return new Date().toISOString(); }
+
+      function fmtSaved(iso){
+        if (!iso) return "—";
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return iso;
+        return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }
+
+      function safeText(x){ return (x ?? "").toString(); }
+
+      function normalizeForSearch(x){
+        return safeText(x).toLowerCase();
+      }
+
+      function deepClone(obj){
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      // --- Persistence ---
+      let saveTimer = null;
+      function scheduleSave(){
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          state.updatedAt = nowISO();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          el("lastSaved").textContent = fmtSaved(state.updatedAt);
+        }, 250);
+      }
+
+      function load(){
+        try{
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return stateDefault();
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object") return stateDefault();
+          // minimal schema hardening
+          if (!Array.isArray(parsed.projects)) parsed.projects = [];
+          if (!Array.isArray(parsed.quickPaths)) parsed.quickPaths = [];
+          parsed.version = 1;
+          parsed.updatedAt = parsed.updatedAt || null;
+
+          // ensure required fields
+          parsed.quickPaths = parsed.quickPaths.map(p => ({
+            id: p.id || uid(),
+            label: safeText(p.label),
+            value: safeText(p.value)
+          }));
+
+          parsed.projects = parsed.projects.map(pr => ({
+            id: pr.id || uid(),
+            name: safeText(pr.name),
+            collapsed: !!pr.collapsed,
+            paths: Array.isArray(pr.paths) ? pr.paths.map(pp => ({
+              id: pp.id || uid(),
+              label: safeText(pp.label),
+              value: safeText(pp.value)
+            })) : [],
+            commands: safeText(pr.commands)
+          }));
+
+          return parsed;
+        } catch(e){
+          return stateDefault();
+        }
+      }
+
+      function setState(newState){
+        state = newState;
+        scheduleSave();
+        renderAll();
+      }
+
+      // --- Clipboard ---
+      async function copyToClipboard(text){
+        const t = safeText(text);
+        try{
+          await navigator.clipboard.writeText(t);
+          return true;
+        } catch(e){
+          // fallback
+          try{
+            const ta = document.createElement("textarea");
+            ta.value = t;
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            return true;
+          } catch(_){
+            return false;
+          }
+        }
+      }
+
+      function showCopyOk(node){
+        if (!node) return;
+        node.style.display = "inline";
+        setTimeout(() => node.style.display = "none", 900);
+      }
+
+      // --- Rendering ---
+      function renderAll(){
+        renderQuickPaths();
+        renderProjects();
+        el("lastSaved").textContent = fmtSaved(state.updatedAt);
+        applyFilter();
+      }
+
+      function renderQuickPaths(){
+        const root = el("quickPathsList");
+        root.innerHTML = "";
+        state.quickPaths.forEach((p) => {
+          const row = document.createElement("div");
+          row.className = "path-item";
+
+          const label = document.createElement("input");
+          label.type = "text";
+          label.placeholder = "Label (e.g. Repo, EOS, Scratch)";
+          label.value = p.label;
+          label.addEventListener("input", () => {
+            p.label = label.value;
+            scheduleSave();
+            applyFilter();
+          });
+
+          const value = document.createElement("input");
+          value.type = "text";
+          value.placeholder = "/full/path/to/something";
+          value.value = p.value;
+          // disable “help”
+          value.spellcheck = false;
+          value.setAttribute("autocorrect","off");
+          value.setAttribute("autocapitalize","off");
+          value.setAttribute("autocomplete","off");
+          value.className = "mono";
+          value.addEventListener("input", () => {
+            p.value = value.value;
+            scheduleSave();
+            applyFilter();
+          });
+
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "btn small-btn";
+          copyBtn.type = "button";
+          copyBtn.textContent = "Copy";
+          const ok = document.createElement("span");
+          ok.className = "copy-ok";
+          ok.textContent = "Copied";
+
+          copyBtn.addEventListener("click", async () => {
+            const success = await copyToClipboard(p.value);
+            if (success) showCopyOk(ok);
+          });
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn small-btn danger";
+          delBtn.type = "button";
+          delBtn.textContent = "Remove";
+          delBtn.addEventListener("click", () => {
+            state.quickPaths = state.quickPaths.filter(x => x.id !== p.id);
+            scheduleSave();
+            renderQuickPaths();
+            applyFilter();
+          });
+
+          row.appendChild(label);
+          row.appendChild(value);
+
+          const copyWrap = document.createElement("div");
+          copyWrap.style.display = "flex";
+          copyWrap.style.alignItems = "center";
+          copyWrap.style.gap = "8px";
+          copyWrap.appendChild(copyBtn);
+          copyWrap.appendChild(ok);
+
+          row.appendChild(copyWrap);
+          row.appendChild(delBtn);
+
+          root.appendChild(row);
+        });
+      }
+
+      function renderProjects(){
+        const sec = el("projectsSection");
+        sec.innerHTML = "";
+
+        state.projects.forEach((pr, idx) => {
+          const card = document.createElement("section");
+          card.className = "card project-card" + (pr.collapsed ? " collapsed" : "");
+          card.dataset.projectId = pr.id;
+
+          // head
+          const head = document.createElement("div");
+          head.className = "card-head";
+
+          const headInner = document.createElement("div");
+          headInner.className = "project-head";
+
+          const nameWrap = document.createElement("div");
+          nameWrap.className = "project-name";
+
+          const nameInput = document.createElement("input");
+          nameInput.type = "text";
+          nameInput.placeholder = "Project name (e.g. econ-qc, hhh6b, ddp-charge-tagger)";
+          nameInput.value = pr.name;
+          nameInput.addEventListener("input", () => {
+            pr.name = nameInput.value;
+            scheduleSave();
+            applyFilter();
+          });
+
+          nameWrap.appendChild(nameInput);
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          const collapseBtn = document.createElement("button");
+          collapseBtn.className = "btn small-btn";
+          collapseBtn.type = "button";
+          collapseBtn.textContent = pr.collapsed ? "Expand" : "Collapse";
+          collapseBtn.addEventListener("click", () => {
+            pr.collapsed = !pr.collapsed;
+            scheduleSave();
+            renderProjects();
+            applyFilter();
+          });
+
+          const upBtn = document.createElement("button");
+          upBtn.className = "btn small-btn";
+          upBtn.type = "button";
+          upBtn.textContent = "Up";
+          upBtn.disabled = (idx === 0);
+          upBtn.addEventListener("click", () => moveProject(idx, -1));
+
+          const downBtn = document.createElement("button");
+          downBtn.className = "btn small-btn";
+          downBtn.type = "button";
+          downBtn.textContent = "Down";
+          downBtn.disabled = (idx === state.projects.length - 1);
+          downBtn.addEventListener("click", () => moveProject(idx, +1));
+
+          const dupBtn = document.createElement("button");
+          dupBtn.className = "btn small-btn";
+          dupBtn.type = "button";
+          dupBtn.textContent = "Duplicate";
+          dupBtn.addEventListener("click", () => duplicateProject(pr.id));
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn small-btn danger";
+          delBtn.type = "button";
+          delBtn.textContent = "Delete";
+          delBtn.addEventListener("click", () => {
+            const ok = confirm(`Delete project "${pr.name || "Untitled"}"?`);
+            if (!ok) return;
+            state.projects = state.projects.filter(x => x.id !== pr.id);
+            scheduleSave();
+            renderProjects();
+            applyFilter();
+          });
+
+          actions.appendChild(collapseBtn);
+          actions.appendChild(upBtn);
+          actions.appendChild(downBtn);
+          actions.appendChild(dupBtn);
+          actions.appendChild(delBtn);
+
+          headInner.appendChild(nameWrap);
+          headInner.appendChild(actions);
+
+          head.appendChild(headInner);
+
+          // body
+          const body = document.createElement("div");
+          body.className = "card-body";
+
+          const bodyGrid = document.createElement("div");
+          bodyGrid.className = "project-body-grid";
+
+          // paths column
+          const pathsCol = document.createElement("div");
+          const pathsLabel = document.createElement("label");
+          pathsLabel.textContent = "Project paths";
+          pathsCol.appendChild(pathsLabel);
+
+          const pathsList = document.createElement("div");
+          pathsList.className = "paths-list";
+
+          pr.paths.forEach((pp) => {
+            const row = document.createElement("div");
+            row.className = "path-item";
+
+            const l = document.createElement("input");
+            l.type = "text";
+            l.placeholder = "Label (e.g. Repo, CMSSW, Output)";
+            l.value = pp.label;
+            l.addEventListener("input", () => {
+              pp.label = l.value;
+              scheduleSave();
+              applyFilter();
+            });
+
+            const v = document.createElement("input");
+            v.type = "text";
+            v.placeholder = "/full/path";
+            v.value = pp.value;
+            v.spellcheck = false;
+            v.setAttribute("autocorrect","off");
+            v.setAttribute("autocapitalize","off");
+            v.setAttribute("autocomplete","off");
+            v.className = "mono";
+            v.addEventListener("input", () => {
+              pp.value = v.value;
+              scheduleSave();
+              applyFilter();
+            });
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "btn small-btn";
+            copyBtn.type = "button";
+            copyBtn.textContent = "Copy";
+            const ok = document.createElement("span");
+            ok.className = "copy-ok";
+            ok.textContent = "Copied";
+            copyBtn.addEventListener("click", async () => {
+              const success = await copyToClipboard(pp.value);
+              if (success) showCopyOk(ok);
+            });
+
+            const del = document.createElement("button");
+            del.className = "btn small-btn danger";
+            del.type = "button";
+            del.textContent = "Remove";
+            del.addEventListener("click", () => {
+              pr.paths = pr.paths.filter(x => x.id !== pp.id);
+              scheduleSave();
+              renderProjects();
+              applyFilter();
+            });
+
+            row.appendChild(l);
+            row.appendChild(v);
+
+            const copyWrap = document.createElement("div");
+            copyWrap.style.display = "flex";
+            copyWrap.style.alignItems = "center";
+            copyWrap.style.gap = "8px";
+            copyWrap.appendChild(copyBtn);
+            copyWrap.appendChild(ok);
+
+            row.appendChild(copyWrap);
+            row.appendChild(del);
+
+            pathsList.appendChild(row);
+          });
+
+          pathsCol.appendChild(pathsList);
+
+          const addPathBtn = document.createElement("button");
+          addPathBtn.className = "btn small-btn";
+          addPathBtn.type = "button";
+          addPathBtn.style.marginTop = "10px";
+          addPathBtn.textContent = "Add path";
+          addPathBtn.addEventListener("click", () => {
+            pr.paths.push({ id: uid(), label: "", value: "" });
+            scheduleSave();
+            renderProjects();
+            applyFilter();
+          });
+
+          pathsCol.appendChild(addPathBtn);
+
+          const pathsHint = document.createElement("p");
+          pathsHint.className = "hint";
+          pathsHint.textContent = "Use full (absolute) paths when possible.";
+          pathsCol.appendChild(pathsHint);
+
+          // commands column
+          const cmdCol = document.createElement("div");
+          const cmdTop = document.createElement("div");
+          cmdTop.className = "row";
+          cmdTop.style.justifyContent = "space-between";
+          cmdTop.style.alignItems = "flex-end";
+
+          const cmdLabelWrap = document.createElement("div");
+          cmdLabelWrap.className = "field";
+          cmdLabelWrap.style.minWidth = "260px";
+          const cmdLabel = document.createElement("label");
+          cmdLabel.textContent = "Commands";
+          cmdLabelWrap.appendChild(cmdLabel);
+
+          const cmdActions = document.createElement("div");
+          cmdActions.className = "row";
+          cmdActions.style.gap = "8px";
+
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "btn small-btn";
+          copyBtn.type = "button";
+          copyBtn.textContent = "Copy";
+          const ok = document.createElement("span");
+          ok.className = "copy-ok";
+          ok.textContent = "Copied";
+
+          const fullBtn = document.createElement("button");
+          fullBtn.className = "btn small-btn";
+          fullBtn.type = "button";
+          fullBtn.textContent = "Full screen";
+
+          cmdActions.appendChild(copyBtn);
+          cmdActions.appendChild(fullBtn);
+          cmdActions.appendChild(ok);
+
+          cmdTop.appendChild(cmdLabelWrap);
+          cmdTop.appendChild(cmdActions);
+
+          const ta = document.createElement("textarea");
+          ta.className = "mono";
+          ta.value = pr.commands;
+          ta.spellcheck = false;
+          ta.setAttribute("autocorrect","off");
+          ta.setAttribute("autocapitalize","off");
+          ta.setAttribute("autocomplete","off");
+          ta.addEventListener("input", () => {
+            pr.commands = ta.value;
+            scheduleSave();
+            applyFilter();
+          });
+
+          copyBtn.addEventListener("click", async () => {
+            const success = await copyToClipboard(pr.commands);
+            if (success) showCopyOk(ok);
+          });
+
+          fullBtn.addEventListener("click", () => openModalForProject(pr.id));
+
+          cmdCol.appendChild(cmdTop);
+          cmdCol.appendChild(ta);
+
+          const cmdHint = document.createElement("p");
+          cmdHint.className = "hint";
+          cmdHint.textContent = "Paste your CLI snippets exactly as you run them. No spellcheck/autocorrect.";
+          cmdCol.appendChild(cmdHint);
+
+          bodyGrid.appendChild(pathsCol);
+          bodyGrid.appendChild(cmdCol);
+
+          body.appendChild(bodyGrid);
+
+          card.appendChild(head);
+          card.appendChild(body);
+
+          sec.appendChild(card);
+        });
+      }
+
+      function moveProject(index, dir){
+        const j = index + dir;
+        if (j < 0 || j >= state.projects.length) return;
+        const arr = state.projects;
+        [arr[index], arr[j]] = [arr[j], arr[index]];
+        scheduleSave();
+        renderProjects();
+        applyFilter();
+      }
+
+      function duplicateProject(projectId){
+        const pr = state.projects.find(p => p.id === projectId);
+        if (!pr) return;
+        const copy = deepClone(pr);
+        copy.id = uid();
+        copy.name = (copy.name ? (copy.name + " (copy)") : "Untitled (copy)");
+        copy.collapsed = false;
+        copy.paths = (copy.paths || []).map(pp => ({ ...pp, id: uid() }));
+        state.projects.unshift(copy);
+        scheduleSave();
+        renderProjects();
+        applyFilter();
+      }
+
+      // --- Search filter ---
+      function applyFilter(){
+        const q = normalizeForSearch(el("searchInput").value).trim();
+        const cards = document.querySelectorAll(".project-card");
+        cards.forEach(card => {
+          const id = card.dataset.projectId;
+          const pr = state.projects.find(p => p.id === id);
+          if (!pr){ card.style.display = "none"; return; }
+          if (!q){ card.style.display = ""; return; }
+
+          const hay =
+            normalizeForSearch(pr.name) + "\n" +
+            normalizeForSearch(pr.commands) + "\n" +
+            (pr.paths || []).map(pp => normalizeForSearch(pp.label) + " " + normalizeForSearch(pp.value)).join("\n");
+
+          const visible = hay.includes(q);
+          card.style.display = visible ? "" : "none";
+        });
+
+        // quick paths: no hide, but they are searched implicitly by user expectation
+      }
+
+      // --- Modal (fullscreen commands) ---
+      const modalBackdrop = el("modalBackdrop");
+      const modalTextarea = el("modalTextarea");
+      const modalTitle = el("modalTitle");
+      const modalCloseBtn = el("modalCloseBtn");
+      const modalCopyBtn = el("modalCopyBtn");
+      let modalProjectId = null;
+
+      function openModalForProject(projectId){
+        const pr = state.projects.find(p => p.id === projectId);
+        if (!pr) return;
+
+        modalProjectId = projectId;
+        modalTitle.textContent = `Edit commands — ${pr.name || "Untitled"}`;
+        modalTextarea.value = pr.commands || "";
+
+        modalBackdrop.style.display = "flex";
+        modalBackdrop.setAttribute("aria-hidden", "false");
+        setTimeout(() => modalTextarea.focus(), 0);
+      }
+
+      function closeModal(){
+        if (modalProjectId){
+          const pr = state.projects.find(p => p.id === modalProjectId);
+          if (pr){
+            pr.commands = modalTextarea.value;
+            scheduleSave();
+            renderProjects();
+            applyFilter();
+          }
+        }
+        modalProjectId = null;
+        modalBackdrop.style.display = "none";
+        modalBackdrop.setAttribute("aria-hidden", "true");
+      }
+
+      modalCloseBtn.addEventListener("click", closeModal);
+      modalBackdrop.addEventListener("click", (e) => {
+        if (e.target === modalBackdrop) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (modalBackdrop.style.display === "flex" && e.key === "Escape") closeModal();
+      });
+      modalTextarea.addEventListener("input", () => {
+        // live-update state without re-render to keep typing smooth
+        if (!modalProjectId) return;
+        const pr = state.projects.find(p => p.id === modalProjectId);
+        if (!pr) return;
+        pr.commands = modalTextarea.value;
+        scheduleSave();
+      });
+      modalCopyBtn.addEventListener("click", async () => {
+        await copyToClipboard(modalTextarea.value);
+      });
+
+      // --- Buttons ---
+      el("addQuickPathBtn").addEventListener("click", () => {
+        state.quickPaths.push({ id: uid(), label: "", value: "" });
+        scheduleSave();
+        renderQuickPaths();
+      });
+
+      el("addProjectBtn").addEventListener("click", () => {
+        state.projects.unshift({
+          id: uid(),
+          name: "",
+          collapsed: false,
+          paths: [{ id: uid(), label: "Repo", value: "" }],
+          commands: ""
+        });
+        scheduleSave();
+        renderProjects();
+        applyFilter();
+        // focus the first project's name
+        setTimeout(() => {
+          const first = document.querySelector(".project-card input[type='text']");
+          if (first) first.focus();
+        }, 0);
+      });
+
+      el("exportBtn").addEventListener("click", () => {
+        const payload = JSON.stringify(state, null, 2);
+        const blob = new Blob([payload], { type: "application/json" });
+        const a = document.createElement("a");
+        const stamp = new Date().toISOString().slice(0,10).replaceAll("-","");
+        a.download = `cli-cheatsheet-backup-${stamp}.json`;
+        a.href = URL.createObjectURL(blob);
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(a.href);
+        document.body.removeChild(a);
+      });
+
+      el("importFile").addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try{
+            const parsed = JSON.parse(reader.result);
+            if (!parsed || typeof parsed !== "object") throw new Error("Invalid JSON");
+            // normalize through load() logic by temporarily writing to storage
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+            state = load();
+            scheduleSave();
+            renderAll();
+          } catch(err){
+            alert("Import failed: invalid JSON file.");
+          } finally {
+            e.target.value = "";
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      el("clearBtn").addEventListener("click", () => {
+        const ok = confirm("Clear all projects and quick paths? This only affects your local browser storage.");
+        if (!ok) return;
+        state = stateDefault();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        scheduleSave();
+        renderAll();
+      });
+
+      el("searchInput").addEventListener("input", applyFilter);
+
+      // initial render
+      renderAll();
+      scheduleSave();
+    })();
+  </script>
+</body>
+</html>
+
