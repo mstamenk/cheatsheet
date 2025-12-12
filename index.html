@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
   <title>CLI Cheat Sheet</title>
+
   <style>
     :root{
       --bg:#ffffff;
@@ -20,6 +21,7 @@
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
+
     *{ box-sizing: border-box; }
     body{
       margin:0;
@@ -30,11 +32,17 @@
     }
     a{ color:var(--blue); text-decoration:none; }
     a:hover{ color:var(--blue-2); text-decoration:underline; }
+
+    /* Wider page (fills ~80% of viewport, capped) */
     .wrap{
-      max-width: 1120px;
+      width: min(1400px, 80vw);
       margin: 0 auto;
       padding: 22px 18px 44px;
     }
+    @media (max-width: 780px){
+      .wrap{ width: min(1120px, 94vw); }
+    }
+
     .topbar{
       display:flex;
       align-items:flex-start;
@@ -67,11 +75,12 @@
       justify-content:flex-end;
       gap:10px;
       align-items:center;
+      min-width: 0;
     }
     .search{
       flex:1;
       min-width: 260px;
-      max-width: 520px;
+      max-width: 560px;
       position:relative;
     }
     .search input{
@@ -82,6 +91,7 @@
       font-size: 14px;
       outline:none;
       background:#fff;
+      min-width: 0;
     }
     .search input:focus{
       border-color: rgba(37,99,235,.55);
@@ -102,6 +112,7 @@
       align-items:center;
       gap:8px;
       user-select:none;
+      white-space: nowrap;
     }
     .btn:hover{ border-color: #d6deea; background: #fafcff; }
     .btn.primary{
@@ -145,15 +156,18 @@
       justify-content:space-between;
       gap:10px;
       background: linear-gradient(180deg, #ffffff, #fbfdff);
+      min-width: 0;
     }
     .card-head h2{
       margin:0;
       font-size: 14px;
       font-weight: 650;
       letter-spacing: -.005em;
+      min-width: 0;
     }
     .card-body{
       padding: 14px;
+      min-width: 0;
     }
     .hint{
       font-size: 12.5px;
@@ -166,6 +180,7 @@
       gap:10px;
       align-items:center;
       flex-wrap:wrap;
+      min-width: 0;
     }
     .field{
       display:flex;
@@ -178,6 +193,8 @@
       font-size: 12px;
       color: var(--muted);
     }
+
+    /* IMPORTANT: allow shrink inside CSS grids (fixes overlap) */
     input[type="text"], textarea{
       border: 1px solid var(--line);
       border-radius: 12px;
@@ -185,6 +202,7 @@
       font-size: 13.5px;
       outline:none;
       background:#fff;
+      min-width: 0;
     }
     input[type="text"]:focus, textarea:focus{
       border-color: rgba(37,99,235,.55);
@@ -201,7 +219,7 @@
     textarea.mono{
       width: 100%;
       min-height: 170px;
-      resize: both;           /* lower-right corner resize handle */
+      resize: both;
       overflow: auto;
       max-width: 100%;
     }
@@ -211,13 +229,18 @@
       flex-direction:column;
       gap:8px;
       margin-top: 6px;
+      min-width: 0;
     }
+
+    /* Use minmax(0,1fr) so the middle column can shrink instead of overflowing */
     .path-item{
       display:grid;
-      grid-template-columns: 180px 1fr auto auto;
+      grid-template-columns: 160px minmax(0,1fr) auto auto;
       gap: 8px;
       align-items:center;
+      min-width: 0;
     }
+    .path-item > *{ min-width: 0; } /* key for inputs inside grid */
     @media (max-width: 820px){
       .path-item{ grid-template-columns: 1fr; }
     }
@@ -229,6 +252,7 @@
       gap:10px;
       flex-wrap:wrap;
       width:100%;
+      min-width: 0;
     }
     .project-name{
       display:flex;
@@ -251,15 +275,19 @@
       justify-content:flex-end;
     }
 
+    /* Give the left column a sensible share, and prevent overflow into the right */
     .project-body-grid{
       display:grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: minmax(360px, 40%) minmax(0, 1fr);
       gap: 14px;
       align-items:start;
+      min-width: 0;
     }
+    .project-body-grid > div{ min-width: 0; }
     @media (max-width: 980px){
       .project-body-grid{ grid-template-columns: 1fr; }
     }
+
     .small-btn{
       padding: 8px 10px;
       font-size: 12.5px;
@@ -304,6 +332,7 @@
     .modal .modal-head .modal-title{
       font-size: 13px;
       font-weight: 650;
+      min-width: 0;
     }
     .modal .modal-body{
       padding: 12px 14px 14px;
@@ -484,13 +513,12 @@
           if (!raw) return stateDefault();
           const parsed = JSON.parse(raw);
           if (!parsed || typeof parsed !== "object") return stateDefault();
-          // minimal schema hardening
+
           if (!Array.isArray(parsed.projects)) parsed.projects = [];
           if (!Array.isArray(parsed.quickPaths)) parsed.quickPaths = [];
           parsed.version = 1;
           parsed.updatedAt = parsed.updatedAt || null;
 
-          // ensure required fields
           parsed.quickPaths = parsed.quickPaths.map(p => ({
             id: p.id || uid(),
             label: safeText(p.label),
@@ -515,12 +543,6 @@
         }
       }
 
-      function setState(newState){
-        state = newState;
-        scheduleSave();
-        renderAll();
-      }
-
       // --- Clipboard ---
       async function copyToClipboard(text){
         const t = safeText(text);
@@ -528,7 +550,6 @@
           await navigator.clipboard.writeText(t);
           return true;
         } catch(e){
-          // fallback
           try{
             const ta = document.createElement("textarea");
             ta.value = t;
@@ -580,7 +601,6 @@
           value.type = "text";
           value.placeholder = "/full/path/to/something";
           value.value = p.value;
-          // disable “help”
           value.spellcheck = false;
           value.setAttribute("autocorrect","off");
           value.setAttribute("autocapitalize","off");
@@ -642,7 +662,6 @@
           card.className = "card project-card" + (pr.collapsed ? " collapsed" : "");
           card.dataset.projectId = pr.id;
 
-          // head
           const head = document.createElement("div");
           head.className = "card-head";
 
@@ -719,10 +738,8 @@
 
           headInner.appendChild(nameWrap);
           headInner.appendChild(actions);
-
           head.appendChild(headInner);
 
-          // body
           const body = document.createElement("div");
           body.className = "card-body";
 
@@ -837,6 +854,7 @@
           const cmdLabelWrap = document.createElement("div");
           cmdLabelWrap.className = "field";
           cmdLabelWrap.style.minWidth = "260px";
+          cmdLabelWrap.style.flex = "1";
           const cmdLabel = document.createElement("label");
           cmdLabel.textContent = "Commands";
           cmdLabelWrap.appendChild(cmdLabel);
@@ -844,6 +862,7 @@
           const cmdActions = document.createElement("div");
           cmdActions.className = "row";
           cmdActions.style.gap = "8px";
+          cmdActions.style.justifyContent = "flex-end";
 
           const copyBtn = document.createElement("button");
           copyBtn.className = "btn small-btn";
@@ -947,8 +966,6 @@
           const visible = hay.includes(q);
           card.style.display = visible ? "" : "none";
         });
-
-        // quick paths: no hide, but they are searched implicitly by user expectation
       }
 
       // --- Modal (fullscreen commands) ---
@@ -995,7 +1012,6 @@
         if (modalBackdrop.style.display === "flex" && e.key === "Escape") closeModal();
       });
       modalTextarea.addEventListener("input", () => {
-        // live-update state without re-render to keep typing smooth
         if (!modalProjectId) return;
         const pr = state.projects.find(p => p.id === modalProjectId);
         if (!pr) return;
@@ -1024,7 +1040,6 @@
         scheduleSave();
         renderProjects();
         applyFilter();
-        // focus the first project's name
         setTimeout(() => {
           const first = document.querySelector(".project-card input[type='text']");
           if (first) first.focus();
@@ -1052,7 +1067,6 @@
           try{
             const parsed = JSON.parse(reader.result);
             if (!parsed || typeof parsed !== "object") throw new Error("Invalid JSON");
-            // normalize through load() logic by temporarily writing to storage
             localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
             state = load();
             scheduleSave();
